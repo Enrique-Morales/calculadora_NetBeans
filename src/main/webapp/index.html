@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Title</title>
+
+<!-- JQUERY -->
+<script src="https://code.jquery.com/jquery-3.3.1.js"
+	integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+	crossorigin="anonymous"></script>
+
+<!-- BOOTSTRAP -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
+
+<style type="text/css">
+body {
+	background-color: #E9C46A;
+}
+
+h1 {
+	font-family: monospace;
+	color: #400712;
+	text-align: center;
+	font-weight: bold;
+}
+
+.num1, .num2, .op {
+	height: 100%;
+	background-color: #2A9D8F;
+	border: 2px solid #264653;
+	border-radius: 8px;
+	font-size: 24px;
+	text-align: center;
+	padding: 30px;
+}
+
+.res {
+	height: 100%;
+	background-color: #264653;
+	border: 2px solid #264653;
+	border-radius: 8px;
+	color: #FFFAF0;
+	font-size: 24px;
+	text-align: center;
+	padding: 30px;
+}
+
+.row {
+	height: 100px;
+}
+
+#error {
+	text-align:center;
+}
+</style>
+
+</head>
+
+<body>
+
+	<div class="container">
+<br>
+<h1>Calculator 2.0</h1>
+<br> 
+
+<form class="form-group">
+  <div class="form-group col-sm-3">
+    <input type="text" class="form-control" id="num1" placeholder="Primer operando">
+  </div>
+  <div class="form-group col-sm-3">
+  <select class="form-control" id="op">
+    <option value="suma" selected="selected">Suma</option>
+    <option value="resta">Resta</option>
+    <option value="mult">Multiplicación</option>
+    <option value="divi">División</option>
+  </select>
+</div>
+  <div class="form-group col-sm-3">
+    <input type="text" class="form-control" id="num2" placeholder="Segundo operando">
+  </div>
+  <div class="form-group col-sm-3">
+    <button type="button" class="btn btn-primary" id="calcular">Calcular</button>
+	<button type="button" class="btn btn-primary" id="limpiar">Limpiar</button>
+  </div>
+</form>
+
+<br><br>
+<div class="row calc">
+  
+<div class="col-sm-3 num1" id="boxNum1"></div>
+<div class="col-sm-3 op" id="boxOp"></div>
+<div class="col-sm-3 num2" id="boxNum2"></div>
+<div class="col-sm-3 res" id="boxRes"></div>
+
+
+</div>
+
+</div>
+
+<br><br>
+
+<div id="error"></div>
+
+<script>
+
+$(document).ready(function () {
+	
+	$("#limpiar").click(function() {
+		
+		$("#error").empty();
+		
+		$("#num1").val('');
+        $("#num2").val('');
+        $("#op").val('suma');
+        
+        $("#boxNum1").empty();
+        $("#boxNum2").empty();
+        $("#boxOp").empty();
+        $("#boxRes").empty();
+		
+	});
+	
+	$("#calcular").click(function() {
+		
+		$("#error").empty();
+		
+		var num1 = $("#num1").val();
+        var num2 = $("#num2").val();
+        var operador = $("#op").val();
+        var url = "/calculadora/calc?num1=" + num1 + "&num2=" + num2 + "&op=" + operador;
+        
+        $.ajax({
+            url: url,
+            cache: false,
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+            	
+            	$("#boxNum1").empty().append(JSON.stringify(data.num1));
+                $("#boxNum2").empty().append(JSON.stringify(data.num2));
+                
+                switch (data.op) {
+                
+                case "suma": $("#boxOp").empty().append("+"); break;
+                case "resta": $("#boxOp").empty().append("-"); break;
+                case "mult": $("#boxOp").empty().append("X"); break;
+                case "divi": $("#boxOp").empty().append("/");break;
+                
+                }
+                
+                var resultado = JSON.stringify(data.res);
+                var x = resultado.length -1;
+                
+                $("#boxRes").empty().append(resultado.substring(1,x));
+            	
+            },
+            error: function (data) {
+                $("#error").empty().append("<div class=\"alert alert-danger\"><h3>" + data.status + ":  " + data.responseText +  "</h3></div>");
+            }
+
+
+        });
+		
+	});
+	
+	
+});
+
+</script>
+
+</body>
+
+</html>
