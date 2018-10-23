@@ -1,2 +1,2 @@
 # calculadora_NetBeans
-Una calculadora básica usando JSON con NetBeans
+A basic calculator making use of JSON with NetBeans.
